@@ -1,9 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class Feature:
-    def __init__(self, id: int, title: str, desc: str, icon: str):
-        self.id = id
-        self.title = title
-        self.desc = desc
-        self.icon = icon
+class Feature(models.Model):
+    title = models.CharField(max_length=100)
+    desc = models.CharField(max_length=500)
+    icon = models.CharField(max_length=200)

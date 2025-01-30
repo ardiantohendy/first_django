@@ -1,16 +1,37 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.contrib.auth.models import User, auth
+from django.contrib import messages
 from .models import Feature
 
 # Create your views here.
 def index(request):
-    feature1 = Feature(1, "Layanan Kami Cepat", "pemesanan makanan kami dibuat oleh chef ternama sehingga penyajiannya cepat dan juga berkualitas", "bi bi-clipboard-data")
-    feature2 = Feature(2, "Layanan Kami Berkualitas", "Semua masakkan kami berkualitas tinggi karena dimasak oleh para chef yang ahli dalam bidangnya", "bi bi-gem")
-    feature3 = Feature(3, "Dapat Dipesan Secara Daring", "Semua menu kami dapat dipesan secara daring melalui aplikasi Yummy yang tersedia di Playstore dan Appstore", "bi bi-inboxes")
-
-    features = [feature1, feature2, feature3]
-
+    features = Feature.objects.all()
     return render(request, 'index.html', {'features' : features})
+
+def register(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        password2 = request.POST['password2']
+
+        if password == password2:
+            if User.objects.filter(email=email).exists():
+                messages.info(request, 'Email already used')
+                return redirect('register')
+            elif User.objects.filter(username = username).exists():
+                messages.info(request, 'Username already used')
+                return redirect('register')
+            else:
+                user = User.objects.create_user(username=username, email=email, password=password)
+                user.save();
+                return redirect('login')
+        else:
+            messages.info(request, 'Password not the same')
+            return redirect('register')
+    else:
+        return render(request, 'register.html')
 
 def counter(request):
     text = request.POST['text']

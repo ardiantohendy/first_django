@@ -9,6 +9,9 @@ def index(request):
     features = Feature.objects.all()
     return render(request, 'index.html', {'features' : features})
 
+def login(request):
+    return render(request, 'login.html', {'user' : user})
+
 def register(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -17,15 +20,15 @@ def register(request):
         password2 = request.POST['password2']
 
         if password == password2:
-            if User.objects.filter(email=email).exists():
-                messages.info(request, 'Email already used')
-                return redirect('register')
-            elif User.objects.filter(username = username).exists():
+            if User.objects.filter(username=username).exists():
                 messages.info(request, 'Username already used')
+                return redirect('register')
+            elif User.objects.filter(email=email).exists():
+                messages.info(request, 'Email already used')
                 return redirect('register')
             else:
                 user = User.objects.create_user(username=username, email=email, password=password)
-                user.save();
+                user.save()
                 return redirect('login')
         else:
             messages.info(request, 'Password not the same')
